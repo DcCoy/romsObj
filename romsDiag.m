@@ -243,7 +243,7 @@ plots(pltcnt).on = plotchoice(pltcnt);
 % (5) surface chlA
 pltcnt = pltcnt + 1;
 plots(pltcnt).on = plotchoice(pltcnt);
-	plots(pltcnt).opt       = [1];
+    plots(pltcnt).opt       = [1];
     plots(pltcnt).vars      = {'SFC_CHL'};
     plots(pltcnt).cmaps     = {'algae'};
     plots(pltcnt).absLevs   = log10([0.01 0.02 0.05 0.1 0.2 0.4 0.8 1.5 3.0 6.0 10.0]);
@@ -260,7 +260,7 @@ plots(pltcnt).on = plotchoice(pltcnt);
 % NOTE: Diagnostics are hard coded to omzthresh
 pltcnt = pltcnt + 1;
 plots(pltcnt).on = plotchoice(pltcnt);
-	plots(pltcnt).opt       = [1];
+    plots(pltcnt).opt       = [1];
     plots(pltcnt).cmap      = cbrewer('seq','YlOrRd',40);
     plots(pltcnt).cmap(1,:) = [1 1 1];
     plots(pltcnt).omzthresh = [     0          5          10         20           50    ]; 
@@ -276,7 +276,7 @@ plots(pltcnt).on = plotchoice(pltcnt);
 % (8) POC_FLUX_IN comparisons
 pltcnt = pltcnt + 1;
 plots(pltcnt).on = plotchoice(pltcnt);
-	plots(pltcnt).opt   = [1];
+    plots(pltcnt).opt   = [1];
     plots(pltcnt).cmaps = {'deep'};
     plots(pltcnt).levs  = {linspace(0,5e-4,40)};
     plots(pltcnt).dlevs = {linspace(-5e-4,5e-4,41)};
@@ -332,26 +332,26 @@ pltcnt = 0;
 % Get variables list
 % phy only
 if isempty(obj.info.bgc_avg) & isempty(obj.info.dia_avg) 
-	all_vars = {obj.info.phy_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.phy_avg(file(1)).Variables.Name};
 % dia only
 elseif isempty(obj.info.phy_avg) & isempty(obj.info.bgc_avg) 
-	all_vars = {obj.info.dia_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.dia_avg(file(1)).Variables.Name};
 % bgc only
 elseif isempty(obj.info.phy_avg) & isempty(obj.info.dia_avg) 
-	all_vars = {obj.info.bgc_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.bgc_avg(file(1)).Variables.Name};
 % bgc + dia only
 elseif isempty(obj.info.phy_avg) & ~isempty(obj.info.bgc_avg) & ~isempty(obj.info.dia_avg) 
-	all_vars = {obj.info.bgc_avg(file(1)).Variables.Name ...
-				obj.info.dia_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.bgc_avg(file(1)).Variables.Name ...
+                obj.info.dia_avg(file(1)).Variables.Name};
 % bgc + phy only
 elseif isempty(obj.info.dia_avg) & ~isempty(obj.info.bgc_avg) & ~isempty(obj.info.phy_avg) 
-	all_vars = {obj.info.phy_avg(file(1)).Variables.Name ...
-				obj.info.bgc_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.phy_avg(file(1)).Variables.Name ...
+                obj.info.bgc_avg(file(1)).Variables.Name};
 % all available
 else
-	all_vars = {obj.info.phy_avg(file(1)).Variables.Name ...
-				obj.info.bgc_avg(file(1)).Variables.Name ...
-				obj.info.dia_avg(file(1)).Variables.Name};
+    all_vars = {obj.info.phy_avg(file(1)).Variables.Name ...
+                obj.info.bgc_avg(file(1)).Variables.Name ...
+                obj.info.dia_avg(file(1)).Variables.Name};
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -363,13 +363,18 @@ if plots(pltcnt).on;
    unpackStruct(plots(pltcnt));
    % Variable loop
    for v = 1:length(vars)
-      if ~opt(v) | ~ismember(vars{v},all_vars);
+      if ~opt(v) %| ~ismember(vars{v},all_vars);
          disp(['...skipping ',vars{v},'...']);
          continue
       end
       % Get data
       obj = clearROMS(obj);
-      obj = zslice(obj,vars(v),zdeps,file);
+      try
+          obj = zslice(obj,vars(v),zdeps,file);
+      catch
+          disp(['...skipping ',vars{v},'...']);
+          continue
+      end
       obj = loadDiag(obj,vars(v),zdeps);
       % Depth loop
       for z = 1:length(zdeps)
@@ -417,7 +422,7 @@ if plots(pltcnt).on;
    unpackStruct(plots(pltcnt));
    % Variable loop
    for v = 1:length(vars);
-      if ~opt(v) | ~ismember(vars{v},all_vars);
+      if ~opt(v) %| ~ismember(vars{v},all_vars);
          disp(['...skipping ',vars{v},'...']);
          continue
       end
@@ -425,8 +430,13 @@ if plots(pltcnt).on;
       for l = 1:length(lats)
          % Get data
          obj = clearROMS(obj);
-         obj = sliceROMS(obj,vars(v),choice,lats(l),file,...
-            'zdep',obj.grid.z_avg_dep(obj.grid.z_avg_dep<=zlims(end)));
+         try
+             obj = sliceROMS(obj,vars(v),choice,lats(l),file,...
+                'zdep',obj.grid.z_avg_dep(obj.grid.z_avg_dep<=zlims(end)));
+         catch
+             disp(['...skipping ',vars{v},'...']);
+             continue
+         end
          obj = sliceDiag(obj,vars(v),choice,lats(l),'zlim',zlims(end));
          for d = 1:length(obj.diag.(vars{v}))
              % Extract data
@@ -473,7 +483,7 @@ if plots(pltcnt).on;
    unpackStruct(plots(pltcnt));
    % Variable loop
    for v = 1:length(vars);
-      if ~opt(v) | ~ismember(vars{v},all_vars);
+      if ~opt(v) %| ~ismember(vars{v},all_vars);
          disp(['...skipping ',vars{v},'...']);
          continue
       end
@@ -584,50 +594,50 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pltcnt = pltcnt + 1;
 if plots(pltcnt).on;
-	unpackStruct(plots(pltcnt));
-	if ~opt(1) | ~ismember(vars{1},all_vars);
-		disp(['...skipping ',vars{1},'... (no variable)']);
-	else
-		obj = loadData(obj,vars,file);
-		obj = loadDiag(obj,vars,0);
-		for d = 1:length(obj.diag.(vars{1}))
-			% Reduce data
-			romsdat = nanmean(obj.data.avg.(vars{1}).data,3);
-			diagdat = nanmean(obj.diag.(vars{1})(d).slice,3);
-			diffdat = romsdat - diagdat;
-			romsdat = real(log10(romsdat));
-			diagdat = real(log10(diagdat));
-			diffdat = romsObj.dfloglevs(diffdat,0.01);
-			% Plot
-			[figs,cbs] = mapCmp(obj,romsdat,diagdat,'cmap',cmaps{1},'levels',absLevs,'difflevels',diffLevs);
-			% ROMS figure
-			set(0,'CurrentFigure',figs(1));
-			title(['ROMS ',obj.data.avg.(vars{1}).name,': sfc'],'Interpreter','Latex');
-			ylabel(cbs(1),obj.data.avg.(vars{1}).units,'Interpreter','Latex');
-			cbs(1).XTickLabel = absLbls; 
-			export_fig('-png',[obj.paths.plots.diag,vars{1},'_roms'],'-m5');
-			close(figs(1));
-			% Diag figure
-			set(0,'CurrentFigure',figs(2));
-			title([obj.diag.(vars{1}).name,': sfc'],'Interpreter','Latex');
-			ylabel(cbs(2),obj.diag.(vars{1})(d).units,'Interpreter','Latex');
-			cbs(2).XTickLabel = absLbls; 
-			export_fig('-png',[obj.paths.plots.diag,vars{1},'_diag',num2str(d)],'-m5');
-			close(figs(2));
-			% Diff figure
-			set(0,'CurrentFigure',figs(3));
-			title(['Difference'],'Interpreter','Latex');
-			ylabel(cbs(3),obj.data.avg.(vars{1}).units,'Interpreter','Latex');
-			cbs(3).XTick = diffLevs;
-			cbs(3).XTickLabel = diffLbls; 
-			cbs(3).Limits = diffCaxis;
-			export_fig('-png',[obj.paths.plots.diag,vars{1},'_diff',num2str(d)],'-m5');
-			close(figs(3));
-		end
-	end
-	% Clear data
-	obj = clearROMS(obj);
-	clearvars -except obj plots pltcnt file all_vars
+    unpackStruct(plots(pltcnt));
+    if ~opt(1) | ~ismember(vars{1},all_vars);
+        disp(['...skipping ',vars{1},'... (no variable)']);
+    else
+        obj = loadData(obj,vars,file);
+        obj = loadDiag(obj,vars,0);
+        for d = 1:length(obj.diag.(vars{1}))
+            % Reduce data
+            romsdat = nanmean(obj.data.avg.(vars{1}).data,3);
+            diagdat = nanmean(obj.diag.(vars{1})(d).slice,3);
+            diffdat = romsdat - diagdat;
+            romsdat = real(log10(romsdat));
+            diagdat = real(log10(diagdat));
+            diffdat = romsObj.dfloglevs(diffdat,0.01);
+            % Plot
+            [figs,cbs] = mapCmp(obj,romsdat,diagdat,'cmap',cmaps{1},'levels',absLevs,'difflevels',diffLevs);
+            % ROMS figure
+            set(0,'CurrentFigure',figs(1));
+            title(['ROMS ',obj.data.avg.(vars{1}).name,': sfc'],'Interpreter','Latex');
+            ylabel(cbs(1),obj.data.avg.(vars{1}).units,'Interpreter','Latex');
+            cbs(1).XTickLabel = absLbls; 
+            export_fig('-png',[obj.paths.plots.diag,vars{1},'_roms'],'-m5');
+            close(figs(1));
+            % Diag figure
+            set(0,'CurrentFigure',figs(2));
+            title([obj.diag.(vars{1}).name,': sfc'],'Interpreter','Latex');
+            ylabel(cbs(2),obj.diag.(vars{1})(d).units,'Interpreter','Latex');
+            cbs(2).XTickLabel = absLbls; 
+            export_fig('-png',[obj.paths.plots.diag,vars{1},'_diag',num2str(d)],'-m5');
+            close(figs(2));
+            % Diff figure
+            set(0,'CurrentFigure',figs(3));
+            title(['Difference'],'Interpreter','Latex');
+            ylabel(cbs(3),obj.data.avg.(vars{1}).units,'Interpreter','Latex');
+            cbs(3).XTick = diffLevs;
+            cbs(3).XTickLabel = diffLbls; 
+            cbs(3).Limits = diffCaxis;
+            export_fig('-png',[obj.paths.plots.diag,vars{1},'_diff',num2str(d)],'-m5');
+            close(figs(3));
+        end
+    end
+    % Clear data
+    obj = clearROMS(obj);
+    clearvars -except obj plots pltcnt file all_vars
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -641,44 +651,44 @@ if plots(pltcnt).on;
     if ~opt(1) | ~ismember('O2',all_vars);
         disp(['...skipping ',vars{1},'... (no variable)']);
     else
-		obj = computeVar(obj,{'OMZ'},file,'thresh',omzthresh);
-		obj = loadDiag(obj,{'OMZ'},omzthresh);
-		% Make comparison plots
-		for d = 1:length(obj.diag.OMZ);
-			for th = 1:length(omzthresh)
-				levs  = linspace(lims{th}(1),lims{th}(2),length(cmap)+1);
-				dlevs = linspace(dlims{th}(1),dlims{th}(2),length(cmap)+1);
-				if ndims(obj.data.avg.OMZ.int)==4
-					romsdat = nanmean(squeeze(obj.data.avg.OMZ.int(:,:,th,:)),3) .* obj.grid.mask_rho;
-				else
-					romsdat = squeeze(obj.data.avg.OMZ.int(:,:,th)) . obj.grid.mask_rho;
-				end
-				diagdat = squeeze(obj.diag.OMZ(d).slice(:,:,th));
-				[figs,cbs] = mapCmp(obj,romsdat,diagdat,'levels',levs,'difflevels',dlevs);
-				% ROMS figure
-				set(0,'CurrentFigure',figs(1));
-				title(['ROMS: ',obj.data.avg.OMZ.name,'(O$_2$ $<$ ',num2str(omzthresh(th)),' mmol $m^{-3}$)'],'Interpreter','Latex');
-				ylabel(cbs(1),obj.data.avg.OMZ.units,'Interpreter','Latex')
-				set(gcf,'ColorMap',cmap);
-				export_fig('-png',[obj.paths.plots.diag,'OMZ_roms_th',num2str(omzthresh(th))],'-m5');
-				% Diag figure
-				set(0,'CurrentFigure',figs(2));
-				title([obj.diag.OMZ(d).name],'Interpreter','Latex');
-				ylabel(cbs(2),obj.diag.OMZ(d).units,'Interpreter','Latex')
-				set(gcf,'ColorMap',cmap);
-				export_fig('-png',[obj.paths.plots.diag,'OMZ_diag_',num2str(d),'_th',num2str(omzthresh(th))],'-m5');
-				% Diff figure
-				set(0,'CurrentFigure',figs(3));
-				title(['Difference'],'Interpreter','Latex');
-				ylabel(cbs(3),obj.data.avg.OMZ.units,'Interpreter','Latex')
-				export_fig('-png',[obj.paths.plots.diag,'OMZ_diff_',num2str(d),'_th',num2str(omzthresh(th))],'-m5');
-				close all
-			end
-		end
-	end
-	% Clear data
-	obj = clearROMS(obj);
-	clearvars -except obj plots pltcnt file all_vars
+        obj = computeVar(obj,{'OMZ'},file,'thresh',omzthresh);
+        obj = loadDiag(obj,{'OMZ'},omzthresh);
+        % Make comparison plots
+        for d = 1:length(obj.diag.OMZ);
+            for th = 1:length(omzthresh)
+                levs  = linspace(lims{th}(1),lims{th}(2),length(cmap)+1);
+                dlevs = linspace(dlims{th}(1),dlims{th}(2),length(cmap)+1);
+                if ndims(obj.data.avg.OMZ.int)==4
+                    romsdat = nanmean(squeeze(obj.data.avg.OMZ.int(:,:,th,:)),3) .* obj.grid.mask_rho;
+                else
+                    romsdat = squeeze(obj.data.avg.OMZ.int(:,:,th)) . obj.grid.mask_rho;
+                end
+                diagdat = squeeze(obj.diag.OMZ(d).slice(:,:,th));
+                [figs,cbs] = mapCmp(obj,romsdat,diagdat,'levels',levs,'difflevels',dlevs);
+                % ROMS figure
+                set(0,'CurrentFigure',figs(1));
+                title(['ROMS: ',obj.data.avg.OMZ.name,'(O$_2$ $<$ ',num2str(omzthresh(th)),' mmol $m^{-3}$)'],'Interpreter','Latex');
+                ylabel(cbs(1),obj.data.avg.OMZ.units,'Interpreter','Latex')
+                set(gcf,'ColorMap',cmap);
+                export_fig('-png',[obj.paths.plots.diag,'OMZ_roms_th',num2str(omzthresh(th))],'-m5');
+                % Diag figure
+                set(0,'CurrentFigure',figs(2));
+                title([obj.diag.OMZ(d).name],'Interpreter','Latex');
+                ylabel(cbs(2),obj.diag.OMZ(d).units,'Interpreter','Latex')
+                set(gcf,'ColorMap',cmap);
+                export_fig('-png',[obj.paths.plots.diag,'OMZ_diag_',num2str(d),'_th',num2str(omzthresh(th))],'-m5');
+                % Diff figure
+                set(0,'CurrentFigure',figs(3));
+                title(['Difference'],'Interpreter','Latex');
+                ylabel(cbs(3),obj.data.avg.OMZ.units,'Interpreter','Latex')
+                export_fig('-png',[obj.paths.plots.diag,'OMZ_diff_',num2str(d),'_th',num2str(omzthresh(th))],'-m5');
+                close all
+            end
+        end
+    end
+    % Clear data
+    obj = clearROMS(obj);
+    clearvars -except obj plots pltcnt file all_vars
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -729,37 +739,37 @@ if plots(pltcnt).on;
     if ~opt(1) | ~ismember('POC_FLUX_IN',all_vars);
         disp(['...skipping POC_FLUX_IN... (no variable)']);
     else
-		% Load POC FLUX IN
-		obj = clearROMS(obj);
-		obj = zslice(obj,{'POC_FLUX_IN'},75,file);
-		obj = loadDiag(obj,{'POC_FLUX_IN'},75);
+        % Load POC FLUX IN
+        obj = clearROMS(obj);
+        obj = zslice(obj,{'POC_FLUX_IN'},75,file);
+        obj = loadDiag(obj,{'POC_FLUX_IN'},75);
 
-		% Depth loop
-		for d = 1:length(obj.diag.POC_FLUX_IN); % skip 100m estimate from Clements
-			close all
-			romsdat    = nanmean(squeeze(obj.data.avg.POC_FLUX_IN.slice),3);
-			diagdat    = nanmean(obj.diag.POC_FLUX_IN(d).slice,3);
-			[figs,cbs] = mapCmp(obj,romsdat,diagdat,'cmap',cmaps{1},'levels',levs{1},'difflevels',dlevs{1});
-			% ROMS figure
-			set(0,'CurrentFigure',figs(1));
-			title(['ROMS ',obj.data.avg.POC_FLUX_IN.name,': 75m'],'Interpreter','Latex');
-			ylabel(cbs(1),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
-			export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_roms'],'-m5');
-			close(figs(1));
-			% Diag figure
-			set(0,'CurrentFigure',figs(2));
-			title([obj.diag.POC_FLUX_IN(d).name,': Euphotic'],'Interpreter','Latex');
-			ylabel(cbs(2),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
-			export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_diag',num2str(d)],'-m5');
-			close(figs(2));
-			% Diff figure
-			set(0,'CurrentFigure',figs(3));
-			title(['Difference'],'Interpreter','Latex');
-			ylabel(cbs(3),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
-			export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_diff',num2str(d)],'-m5');
-		end
-	end
-	% Clear data
+        % Depth loop
+        for d = 1:length(obj.diag.POC_FLUX_IN); % skip 100m estimate from Clements
+            close all
+            romsdat    = nanmean(squeeze(obj.data.avg.POC_FLUX_IN.slice),3);
+            diagdat    = nanmean(obj.diag.POC_FLUX_IN(d).slice,3);
+            [figs,cbs] = mapCmp(obj,romsdat,diagdat,'cmap',cmaps{1},'levels',levs{1},'difflevels',dlevs{1});
+            % ROMS figure
+            set(0,'CurrentFigure',figs(1));
+            title(['ROMS ',obj.data.avg.POC_FLUX_IN.name,': 75m'],'Interpreter','Latex');
+            ylabel(cbs(1),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
+            export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_roms'],'-m5');
+            close(figs(1));
+            % Diag figure
+            set(0,'CurrentFigure',figs(2));
+            title([obj.diag.POC_FLUX_IN(d).name,': Euphotic'],'Interpreter','Latex');
+            ylabel(cbs(2),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
+            export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_diag',num2str(d)],'-m5');
+            close(figs(2));
+            % Diff figure
+            set(0,'CurrentFigure',figs(3));
+            title(['Difference'],'Interpreter','Latex');
+            ylabel(cbs(3),obj.diag.POC_FLUX_IN(1).units,'Interpreter','Latex');
+            export_fig('-png',[obj.paths.plots.diag,'POC_FLUX_IN_diff',num2str(d)],'-m5');
+        end
+    end
+    % Clear data
     obj = clearROMS(obj);
     clearvars -except obj plots pltcnt file all_vars
 end
