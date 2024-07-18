@@ -22,9 +22,12 @@ function obj = romsComp(obj,file,plotchoice)
 %   3  == meridional transects
 %   4  == surface comparisons
 %
-%	------------------------------
-%	------ OTHER DIAGNOSTICS -----
-%	------------------------------
+%    -----------------------
+%    -- OTHER DIAGNOSTICS --
+%    -----------------------
+%
+%    5  == surface chlA map (log scale)
+%    6  == OMZ thickness     (0, 5, 10, 20, 50uM)
 %
 % Example:
 % - obj = romsComp(obj,{[1],[1]},[2:11]);
@@ -142,7 +145,7 @@ plots(pltcnt).on = plotchoice(pltcnt);
                            [0      100]; ... % SiO3
                            [1900  2400]; ... % DIC
                            [2200  2450]};    % Alk
-    plots(pltcnt).dlims = {[-5       5]; ... % temp
+   plots(pltcnt).dlims =  {[-5       5]; ... % temp
                            [-1.0   1.0]; ... % salt
                            [-0.6   0.6]; ... % rho
                            [-100   100]; ... % O2
@@ -234,27 +237,38 @@ plots(pltcnt).on = plotchoice(pltcnt);
 % (4)  Surface fields
 pltcnt = pltcnt + 1;
 plots(pltcnt).on = plotchoice(pltcnt);
-   plots(pltcnt).opt   = [   1         1          1            1     ];
-   plots(pltcnt).vars  = { 'MLD'  ,  'SSH'   ,  'NPP'   ,   'FG_N2O' };
-   plots(pltcnt).cmaps = { 'deep' ;  'deep'  ; 'algae'  ;  'balance' };
-   plots(pltcnt).lims  = {[0  150];[0    1.5];[0   1000];[-5e-7 5e-7]};
-   plots(pltcnt).dlims = {[-60 60];[-0.3 0.3];[-700 700];[-5e-7 5e-7]};
+   plots(pltcnt).opt   = [   1         1          1            1            1            1           1             1       ];
+   plots(pltcnt).vars  = { 'MLD'  ,  'SSH'   ,  'NPP'   ,   'FG_N2O' ,   'sustr'  ,   'svstr'  ,    'ws'    ,    'wsc'     };
+   plots(pltcnt).cmaps = { 'deep' ;  'deep'  ; 'algae'  ;  'balance' ;  'balance' ;  'balance' ;   'amp'    ; 'balance'    };
+   plots(pltcnt).lims  = {[0  150];[0    1.5];[0   1000];[-5e-7 5e-7];[-1e-4 1e-4];[-1e-4 1e-4];[0     1e-4];[-2e-10 2e-10]};
+   plots(pltcnt).dlims = {[-60 60];[-0.3 0.3];[-700 700];[-5e-7 5e-7];[-1e-4 1e-4];[-1e-4 1e-4];[-1e-4 1e-4];[-2e-10 2e-10]};
 
 % (5) surface chlA
 pltcnt = pltcnt + 1;
 plots(pltcnt).on = plotchoice(pltcnt);
-	plots(pltcnt).opt       = [1];
+    plots(pltcnt).opt       = [1];
     plots(pltcnt).vars      = {'SFC_CHL'};
     plots(pltcnt).cmaps     = {'algae'};
-    plots(pltcnt).absLevs   = log10([0.01 0.02 0.05 0.1 0.2 0.4 0.8 1.5 3.0 6.0 10.0]);
-    plots(pltcnt).absLbls   = [0.01 0.02 0.05 0.1 0.2 0.4 0.8 1.5 3.0 6.0 10.0];
-    plots(pltcnt).absCaxis  = real(log10([0.01 10]));
-    plots(pltcnt).diffLevs  = [0.005 0.01 0.02 0.05 0.1 0.2 0.4 0.8 1.5 3.0];
-    plots(pltcnt).diffLbls  = [0.005 0.01 0.02 0.05 0.1 0.2 0.4 0.8 1.5 3.0];
-    plots(pltcnt).diffLevs  = [-fliplr(plots(pltcnt).diffLevs) plots(pltcnt).diffLevs];
-    plots(pltcnt).diffLbls  = [-fliplr(plots(pltcnt).diffLbls) plots(pltcnt).diffLbls];
-    plots(pltcnt).diffLevs  = romsObj.dfloglevs(plots(pltcnt).diffLevs,0.001);
-    plots(pltcnt).diffCaxis = [plots(pltcnt).diffLevs(1) plots(pltcnt).diffLevs(end)];
+    plots(pltcnt).absLevs   = sqrt([0:0.01:1.0]);
+    plots(pltcnt).absLbls   = plots(pltcnt).absLevs.^2;
+	plots(pltcnt).diffLevs  = linspace(-0.4,0.4,42);
+
+% (6) OMZ thickness
+% NOTE: Diagnostics are hard coded to omzthresh
+pltcnt = pltcnt + 1;
+plots(pltcnt).on = plotchoice(pltcnt);
+    plots(pltcnt).opt       = [1];
+    plots(pltcnt).cmap      = cbrewer('seq','YlOrRd',40);
+    plots(pltcnt).cmap(1,:) = [1 1 1];
+    plots(pltcnt).omzthresh = [     0          5            10          20            50     ]; 
+    plots(pltcnt).lims      = {[0    500],[0     1000],[0     1000],[0     2000],[0     2000]};
+    plots(pltcnt).dlims     = {[-500 500],[-1000 1000],[-1000 1000],[-2000 2000],[-2000 2000]};
+
+% (7) Transect maps
+pltcnt = pltcnt + 1;
+plots(pltcnt).on = plotchoice(pltcnt);
+    plots(pltcnt).lons = [210 255 272];
+    plots(pltcnt).lats = [0];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -297,14 +311,19 @@ if plots(pltcnt).on;
 	unpackStruct(plots(pltcnt));
 	% Inter-ROMS comparisons
 	for v = 1:length(vars)
-		if ~opt(v) | ~ismember(vars{v},roms1_vars) | ~ismember(vars{v},roms2_vars)
+		if ~opt(v)
 			disp(['...skipping ',vars{v},'...']);
 			continue
 		end
-		for i = 1:length(obj)
-			obj(i) = clearROMS(obj(i));
-			obj(i) = zslice(obj(i),vars(v),zdeps,file{i});
-			tmp{i} = obj(i).data.avg.(vars{v}).slice;
+		try
+			for i = 1:length(obj)
+				obj(i) = clearROMS(obj(i));
+				obj(i) = zslice(obj(i),vars(v),zdeps,file{i});
+				tmp{i} = obj(i).data.avg.(vars{v}).slice;
+			end
+		catch
+			disp(['...skipping ',vars{v},'...']);
+			continue
 		end
 		for z = 1:length(zdeps)
 			% Get levels
@@ -350,16 +369,21 @@ if plots(pltcnt).on;
 	unpackStruct(plots(pltcnt));
     % Inter-ROMS comparisons
     for v = 1:length(vars)
-        if ~opt(v) | ~ismember(vars{v},roms1_vars) | ~ismember(vars{v},roms2_vars)
+        if ~opt(v) 
             disp(['...skipping ',vars{v},'...']);
             continue
         end
 		for l = 1:length(lats)
-			for i = 1:length(obj)
-				obj(i) = clearROMS(obj(i));
-				obj(i) = sliceROMS(obj(i),vars(v),choice,lats(l),file{i},...
-					'zdep',obj(i).grid.z_avg_dep(obj(i).grid.z_avg_dep<=zlims(end)));
-				tmp{i} = obj(i).data.avg.(vars{v}).slice;
+			try
+				for i = 1:length(obj)
+					obj(i) = clearROMS(obj(i));
+					obj(i) = sliceROMS(obj(i),vars(v),choice,lats(l),file{i},...
+						'zdep',obj(i).grid.z_avg_dep(obj(i).grid.z_avg_dep<=zlims(end)));
+					tmp{i} = obj(i).data.avg.(vars{v}).slice;
+				end
+			catch
+				disp(['...skipping ',vars{v},'...']);
+				continue
 			end
 			roms1dat = tmp{1}; 
 			roms2dat = tmp{2}; 
@@ -405,17 +429,22 @@ if plots(pltcnt).on;
 	unpackStruct(plots(pltcnt));
     % Inter-ROMS comparisons
     for v = 1:length(vars)
-        if ~opt(v) | ~ismember(vars{v},roms1_vars) | ~ismember(vars{v},roms2_vars)
+        if ~opt(v)
             disp(['...skipping ',vars{v},'...']);
             continue
         end
 		for l = 1:length(lons)
 			% Get data
-			for i = 1:length(obj)
-				obj(i) = clearROMS(obj(i));
-				obj(i) = sliceROMS(obj(i),vars(v),choice,lons(l),file{i},...
-					'zdep',obj(i).grid.z_avg_dep(obj(i).grid.z_avg_dep<=zlims(end)));
-				tmp{i} = obj(i).data.avg.(vars{v}).slice;
+			try
+				for i = 1:length(obj)
+					obj(i) = clearROMS(obj(i));
+					obj(i) = sliceROMS(obj(i),vars(v),choice,lons(l),file{i},...
+						'zdep',obj(i).grid.z_avg_dep(obj(i).grid.z_avg_dep<=zlims(end)));
+					tmp{i} = obj(i).data.avg.(vars{v}).slice;
+				end
+			catch
+				disp(['...skipping ',vars{v},'...']);
+				continue
 			end
 			% Get levels
 			levs  = linspace(lims{v}(1),lims{v}(2),40);
@@ -461,19 +490,22 @@ if plots(pltcnt).on;
 	unpackStruct(plots(pltcnt));
 	% Variable loop
 	for v = 1:length(vars)
-        if ~opt(v) | ~ismember(vars{v},roms1_vars) | ~ismember(vars{v},roms2_vars)
+        if ~opt(v)
 			disp(['...skipping ',vars{v},'...']);
 			continue
 		end
 		% Get data
-		for i = 1:length(obj)
-			obj(i) = clearROMS(obj(i));
-			if strcmp(vars{v},'FG_N2O')
+		try
+			for i = 1:length(obj)
+				obj(i) = clearROMS(obj(i));
 				obj(i) = loadData(obj(i),vars(v),file{i});
-				obj(i).data.avg.FG_N2O.data = -obj(i).data.avg.FG_N2O.data; % loss = positive
-			else
-				obj(i) = computeVar(obj(i),vars(v),file{i});
-			end		
+				if strcmp(vars{v},'FG_N2O')
+					obj(i).data.avg.FG_N2O.data = -obj(i).data.avg.FG_N2O.data; % loss = positive
+				end		
+			end
+		catch
+			disp(['...skipping ',vars{v},'...']);
+			continue
 		end
 		% Get levels
 		levs  = linspace(lims{v}(1),lims{v}(2),40);
@@ -516,39 +548,47 @@ end
 pltcnt = pltcnt + 1;
 if plots(pltcnt).on;
 	unpackStruct(plots(pltcnt));
-    if ~opt(1) | ~ismember(vars{1},roms1_vars) | ~ismember(vars{1},roms2_vars);
-        disp(['...skipping ',vars{1},'... (no variable)']);
-        return
-    end
-	for i = 1:length(obj)
-		obj(i) = clearROMS(obj(i));
-		obj(i) = loadData(obj(i),vars(1),file{i});
-	end
-	close all
-	roms1dat = nanmean(obj(1).data.avg.(vars{v}).data,3);
-	roms2dat = nanmean(obj(2).data.avg.(vars{v}).data,3);
-	% Plot
-	[figs,cbs] = mapCmp(obj(1),roms1dat,roms2dat,'cmap',cmaps{1},'levels',absLevs,'difflevels',diffLevs);
-    % ROMS figure
-	set(0,'CurrentFigure',figs(1));
-	title([obj(1).info.runName,' ',obj(1).data.avg.(vars{v}).name],'Interpreter','Latex');
-	ylabel(cbs(1),obj(1).data.avg.(vars{v}).units,'Interpreter','Latex');
-	export_fig('-png',[comppath,vars{v},'_roms1'],'-m5');
-	close(figs(1));
-	set(0,'CurrentFigure',figs(2));
-	title([obj(2).info.runName,' ',obj(2).data.avg.(vars{v}).name],'Interpreter','Latex');
-	ylabel(cbs(2),obj(2).data.avg.(vars{v}).units,'Interpreter','Latex');
-	export_fig('-png',[comppath,vars{v},'_roms2'],'-m5');
-	close(figs(2));
-	% Diff figure
-	set(0,'CurrentFigure',figs(3));
-	title(['ROMS Difference'],'Interpreter','Latex');
-	ylabel(cbs(3),obj(1).data.avg.(vars{v}).units,'Interpreter','Latex');
-	export_fig('-png',[comppath,vars{v},'_roms_diff'],'-m5');
-	close(figs(3));
-    % Clear data
-    for i = 1:length(obj)
-        obj(i) = clearROMS(obj(i));
-    end
-	clearvars -except obj plots comppath file pltcnt roms1_vars roms2_vars
+	try
+		for i = 1:length(obj)
+			obj(i) = clearROMS(obj(i));
+			obj(i) = loadData(obj(i),vars(1),file{i});
+		end
+		close all
+		roms1dat = nanmean(obj(1).data.avg.(vars{v}).data,3);
+		roms2dat = nanmean(obj(2).data.avg.(vars{v}).data,3);
+		roms1dat(roms1dat<0) = 0;
+		roms2dat(roms2dat<0) = 0;
+		roms1dat = sqrt(roms1dat);
+		roms2dat = sqrt(roms2dat);
+		% Plot
+		[figs,cbs] = mapCmp(obj(1),roms1dat,roms2dat,'cmap',cmaps{1},'levels',absLevs,'difflevels',diffLevs);
+		% ROMS figure
+		set(0,'CurrentFigure',figs(1));
+		title([obj(1).info.runName,' ',obj(1).data.avg.(vars{v}).name],'Interpreter','Latex');
+		ylabel(cbs(1),obj(1).data.avg.(vars{v}).units,'Interpreter','Latex');
+		cbs(1).XTick      = absLevs([1:10:101]);
+		cbs(1).XTickLabel = absLbls([1:10:101]); 
+		export_fig('-png',[comppath,vars{v},'_roms1'],'-m5');
+		close(figs(1));
+		set(0,'CurrentFigure',figs(2));
+		title([obj(2).info.runName,' ',obj(2).data.avg.(vars{v}).name],'Interpreter','Latex');
+		ylabel(cbs(2),obj(2).data.avg.(vars{v}).units,'Interpreter','Latex');
+		cbs(2).XTick      = absLevs([1:10:101]);
+		cbs(2).XTickLabel = absLbls([1:10:101]); 
+		export_fig('-png',[comppath,vars{v},'_roms2'],'-m5');
+		close(figs(2));
+		% Diff figure
+		set(0,'CurrentFigure',figs(3));
+		title(['ROMS Difference'],'Interpreter','Latex');
+		ylabel(cbs(3),obj(1).data.avg.(vars{v}).units,'Interpreter','Latex');
+		export_fig('-png',[comppath,vars{v},'_roms_diff'],'-m5');
+		close(figs(3));
+		% Clear data
+		for i = 1:length(obj)
+			obj(i) = clearROMS(obj(i));
+		end
+		clearvars -except obj plots comppath file pltcnt roms1_vars roms2_vars
+	catch
+		 disp(['...skipping ',vars{1},'...']);
+	end	
 end
