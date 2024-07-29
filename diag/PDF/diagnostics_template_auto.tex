@@ -134,6 +134,67 @@
 \fi 
 
 % --------------------------------------------------------------------- %
+% POC flux
+% --------------------------------------------------------------------- %
+\IfFileExists{\figurePath{pocfluxin_roms.png}}{
+
+	% Looper
+	\foreach \i in {1,...,\numPOCdiags}{
+		\begin{figure}[H]
+          		\centering
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{pocfluxin_roms.png}}}
+			
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{pocfluxin_diag\i.png}}}
+			
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{pocfluxin_diff\i.png}}}
+			
+			\ifnum \i=1
+				\caption[Sinking particulate organic carbon flux comparisons]{Sinking particulate organic carbon flux comparisons}
+			\else
+				\caption[]{Sinking particulate organic carbon flux comparisons}
+			\fi
+		\end{figure}
+		\newpage
+	}		
+}{}
+
+% --------------------------------------------------------------------- %
+% OMZ Thickness
+% --------------------------------------------------------------------- %
+\IfFileExists{\figurePath{OMZ_roms_th0.png}}{
+
+	% Looper
+	\foreach \i in {1,...,\numOMZdiags}{
+		\begin{figure}[H]
+          		\centering
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_roms_th0.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_roms_th5.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_roms_th10.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_roms_th20.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_roms_th50.png}}}
+			
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diag_\i_th0.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diag_\i_th5.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diag_\i_th10.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diag_\i_th20.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diag_\i_th50.png}}}
+			
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diff_\i_th0.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diff_\i_th5.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diff_\i_th10.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diff_\i_th20.png}}}
+			\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{OMZ_diff_\i_th50.png}}}
+			\ifnum \i=1
+				\caption[OMZ thickness comparisons]{OMZ thickness comparisons}
+			\else
+				\caption[]{OMZ thickness comparisons}
+			\fi
+		\end{figure}
+		\newpage
+	}		
+}{}
+
+% --------------------------------------------------------------------- %
 % Shallow Fields
 % --------------------------------------------------------------------- %
 \renewcommand*{\thisvar}{Null}

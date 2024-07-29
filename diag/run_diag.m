@@ -11,20 +11,19 @@ run('../romsOpt.m');
 
 % Run options
 if (0)
-	% Pacmed
-	simName    = 'pacmed_0p25';
-	runName    = 'pdamien_loop3';
-	file       = 1; 
+    % Pacmed
+    simName    = 'pacmed_0p25';
+    runName    = 'pdamien_loop3';
+    file       = 1; 
 else
-	% Peru
-	simName    = 'peru_chile_0p1';
-	runName    = 'microbes_eth_obligate_tune0';
-	file       = 109:120;
+    % Peru
+    simName    = 'peru_chile_0p1';
+    runName    = 'microbes_eth_obligate_tune0';
+    file       = 109:120;
 end
 
 % Plot choices (see romsDiag)
 plotchoice = [1:7];
-plotchoice = 6;
 
 % Initialize object
 obj = initROMS(romsObj,simName,runName);

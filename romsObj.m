@@ -28,7 +28,7 @@ classdef romsObj
         grid                      % struct containing grid data and dimensions (via loadGrid)
         slice                     % struct containing slice coordinates (via sliceROMS/sliceDiag)
         profile                   % struct containing profile coordinates (via getProfile)
-		budget                    % struct containing BGC tracer budget results (via getBudg)
+        budget                    % struct containing BGC tracer budget results (via getBudg)
         data                      % struct containing ROMS output (via loadData, computeVar, sliceROMS)
         diag                      % struct containing validation data for comparions (via loadDiag, sliceDiag)
         paths = getDiagPaths;     % struct containing paths to data, directories, diagnostic data, etc (via initROMS)
@@ -57,7 +57,7 @@ classdef romsObj
             % Example:
             % - obj = initROMS(romsObj,'peru_chile_0p1','VKV4_tune2')                         <-- if obj undefined
             % - obj = initROMS(obj,'peru_chile_0p1','VKV4_tune2')                             <-- if obj defined
-			% - obj = initROMS(obj,'peru_chile_0p1','VKV4_tune2','domain',[100 200 100 200]); <-- define subdomain
+            % - obj = initROMS(obj,'peru_chile_0p1','VKV4_tune2','domain',[100 200 100 200]); <-- define subdomain
             % -------------------
 
             %  Begin
@@ -75,16 +75,16 @@ classdef romsObj
             addpath(scriptsPath)
 
             % Process inputs 
-			A.domain = [];
+            A.domain = [];
             A.coast  = [];
             A.depth  = [];
             A.bathy  = [];
             A        = romsObj.parse_pv_pairs(A,varargin);
 
             % Clear any loaded ROMS data
-			if ~isempty(obj.data) | ~isempty(obj.diag)
-				obj = clearROMS(obj);
-			end
+            if ~isempty(obj.data) | ~isempty(obj.diag)
+                obj = clearROMS(obj);
+            end
 
             % Get simPath and grid file
             obj.paths.simPath   = [simPath,simName,'/'];
@@ -120,7 +120,7 @@ classdef romsObj
             mkdir([obj.paths.runPath,'flux/his/']);
             mkdir([obj.paths.runPath,'flx/avg/']);
             mkdir([obj.paths.runPath,'flx/his/']);
-			mkdir([obj.paths.plots.figs]);
+            mkdir([obj.paths.plots.figs]);
             warning on
 
             % Initialize info for subregion
@@ -146,7 +146,7 @@ classdef romsObj
             % Initialize info for ROMS variables
             obj.info = A;
             obj.info.simName = simName;
-			obj.info.runName = runName;
+            obj.info.runName = runName;
 
             % Get info for files
             obj = romsInfo(obj);
@@ -253,16 +253,16 @@ classdef romsObj
                 kill
             end
 
-			% Load other parameter values
-			params = {'rho0','theta_s','theta_b','hc','dt','ntimes','nwrt','navg'};
-			for i = 1:length(params)
-				if ~isempty(obj.info.phy_avg)
-					idx = find(strcmp(params{i},{obj.info.phy_avg(1).Attributes.Name})==1);	
-					if ~isempty(idx)
-						obj.info.params.(params{i}) = obj.info.phy_avg(1).Attributes(idx).Value;
-					end
-				end
-			end
+            % Load other parameter values
+            params = {'rho0','theta_s','theta_b','hc','dt','ntimes','nwrt','navg'};
+            for i = 1:length(params)
+                if ~isempty(obj.info.phy_avg)
+                    idx = find(strcmp(params{i},{obj.info.phy_avg(1).Attributes.Name})==1);    
+                    if ~isempty(idx)
+                        obj.info.params.(params{i}) = obj.info.phy_avg(1).Attributes(idx).Value;
+                    end
+                end
+            end
         end % end method romsInfo
 
         %--------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ classdef romsObj
             obj.grid.polygon(:,2) = [obj.grid.lat_rho(1,:) obj.grid.lat_rho(:,end)'...
                                      fliplr(obj.grid.lat_rho(end,:)) flipud(obj.grid.lat_rho(:,1))'];
 
-			% Apply mask
+            % Apply mask
             % Try loading u/v fields
             try
                 obj.grid.lon_u  = double(ncread(obj.paths.grid,'lon_u',...
@@ -476,11 +476,11 @@ classdef romsObj
                 % Get depths
                 for i = 1:size(tmp.zeta,3);
                     z_r = zlevs4(tmp.h,tmp.zeta(:,:,i),...
-						obj.info.params.theta_s,obj.info.params.theta_b,...
-						obj.info.params.hc,obj.grid.s_rho,'r','new2012');
+                        obj.info.params.theta_s,obj.info.params.theta_b,...
+                        obj.info.params.hc,obj.grid.s_rho,'r','new2012');
                     z_w = zlevs4(tmp.h,tmp.zeta(:,:,i),...
-						obj.info.params.theta_s,obj.info.params.theta_b,...
-						obj.info.params.hc,obj.grid.s_rho,'w','new2012');
+                        obj.info.params.theta_s,obj.info.params.theta_b,...
+                        obj.info.params.hc,obj.grid.s_rho,'w','new2012');
                     z_r = permute(z_r,[2 3 1]);
                     if A.full
                         z_u = (z_r(1:end-1,:,:) + z_r(2:end,:,:))./2;
@@ -612,7 +612,7 @@ classdef romsObj
             % -------------------
 
             % Defaults for optional arguments
-			romsOpt
+            romsOpt
             A.type   = ['avg']; % file type
             A.mean   = [0];     % averaging switch
             A        = romsObj.parse_pv_pairs(A,varargin);
@@ -1234,7 +1234,7 @@ classdef romsObj
             % 
             % This will slice temp and salt data from file 1 at 0 degrees longitude
             % -------------------
-			disp('sliceROMS: Grabbing transects');
+            disp('sliceROMS: Grabbing transects');
             % Clear slice struct
             obj.slice = [];
     
@@ -1264,7 +1264,7 @@ classdef romsObj
             end
             % Load variables
             for i = 1:length(vars)
-				obj = loadData(obj,vars(i),file,'type',A.type);
+                obj = loadData(obj,vars(i),file,'type',A.type);
             end
             nt = size(obj.grid.(A.type).Hz,4);
 
@@ -1790,7 +1790,7 @@ classdef romsObj
             % Example:
             %    - obj = getProfile(obj,{'temp','salt','O2','NO3'},[250 250],[-15 -20]);
             % -------------------
-			disp('getProfile: Grabbing profile(s)');
+            disp('getProfile: Grabbing profile(s)');
 
             % process inputs
             A.type     = 'avg';
@@ -1844,7 +1844,7 @@ classdef romsObj
             %
             % Inputs:
             % - type    = 'phy_avg','bgc_his','dia_avg', etc. 
-			% - display = any number will show full ncdisp output (default is 'min')
+            % - display = any number will show full ncdisp output (default is 'min')
             %
             % Example:
             % - dispVars(obj,'type','his');
@@ -1886,11 +1886,11 @@ classdef romsObj
             end
  
             % Call ncdisp    
-			if nargin < 3
-				ncdisp([obj.info.(file_type)(1).Filename],'/','min');    
-			else
-				ncdisp([obj.info.(file_type)(1).Filename]);    
-			end
+            if nargin < 3
+                ncdisp([obj.info.(file_type)(1).Filename],'/','min');    
+            else
+                ncdisp([obj.info.(file_type)(1).Filename]);    
+            end
         end % end method dispVars
 
         %--------------------------------------------------------------------------------
@@ -1942,16 +1942,16 @@ classdef romsObj
             end
 
             % Get budget
-			romsOpt
+            romsOpt
             for i = 1:length(vars)
                 disp(['getBudg: Computing budget for ',vars{i}]);
 
-				% Grab budget settings
-				if ~isempty(budget.(vars{i}))
-					obj.budget.(vars{i}).info = budget.(vars{i});
-				else
-					disp('    ERROR(getBudg): budget settings not set in romsOpt.m');
-				end
+                % Grab budget settings
+                if ~isempty(budget.(vars{i}))
+                    obj.budget.(vars{i}).info = budget.(vars{i});
+                else
+                    disp('    ERROR(getBudg): budget settings not set in romsOpt.m');
+                end
             
                 % Load all 3D output terms
                 terms = [vars{i},obj.budget.(vars{i}).info.rates,obj.budget.(vars{i}).info.fluxes];
@@ -1966,17 +1966,17 @@ classdef romsObj
 
                 % Load and process 2D fluxes
                 obj = getFluxes(obj,vars(i),...
-					obj.budget.(vars{i}).info.fluxes,...
-					obj.budget.(vars{i}).info.lvls,...
-					obj.budget.(vars{i}).info.feq);
+                    obj.budget.(vars{i}).info.fluxes,...
+                    obj.budget.(vars{i}).info.lvls,...
+                    obj.budget.(vars{i}).info.feq);
 
                 % Get dCdt, advection, sms, net terms
                 obj = computeDcDt(obj,vars(i),hisfile);
                 obj = computeAdv(obj,vars(i),physfile);
                 obj = computeSMS(obj,vars(i),...
-					obj.budget.(vars{i}).info.rates,...
+                    obj.budget.(vars{i}).info.rates,...
                     obj.budget.(vars{i}).info.smseq,...
-					obj.budget.(vars{i}).info.rtits);
+                    obj.budget.(vars{i}).info.rtits);
                 obj = computeNet(obj,vars(i));
 
                 % OPTIONAL SWITCHES
@@ -2011,7 +2011,7 @@ classdef romsObj
             % - vars    = BGC budget that you are closing (i.e. 'NO2')
             % - fluxes  = 2D fluxes (air-sea, sediment, etc)
             % - lvls    = levels to apply 2D flux ('sfc','sed', as a cell array)
-			% - feq     = factors to multiply fluxes by
+            % - feq     = factors to multiply fluxes by
             %
             % Optional inputs:
             % - type    = file type (avg, his, rst)
@@ -2025,9 +2025,9 @@ classdef romsObj
             A.type = 'avg'; % file type
             A      = romsObj.parse_pv_pairs(A,varargin);
  
-			% Initialize matrices-to-fill
-			obj.budget.(vars{1}).fg  = zeros(size(obj.grid.(A.type).mask_rho3d)).*obj.grid.(A.type).mask_rho3d;
-			obj.budget.(vars{1}).sed = zeros(size(obj.grid.(A.type).mask_rho3d)).*obj.grid.(A.type).mask_rho3d;           
+            % Initialize matrices-to-fill
+            obj.budget.(vars{1}).fg  = zeros(size(obj.grid.(A.type).mask_rho3d)).*obj.grid.(A.type).mask_rho3d;
+            obj.budget.(vars{1}).sed = zeros(size(obj.grid.(A.type).mask_rho3d)).*obj.grid.(A.type).mask_rho3d;           
 
             % Kill if no fluxes
             if isempty(fluxes{1});
@@ -2084,29 +2084,29 @@ classdef romsObj
             disp('computeDcDt: Grabbing tracer tendencies over averaging period')
 
             % Compute dt according to output frequency
-			dt1 = [];
-			dt2 = [];
-			try
-				dt1 = double(obj.info.params.dt)*double(obj.info.params.nwrt);
-			catch
-				dt1 = 0; % ERROR
-			end
-			try
-				dt2 = double(obj.info.params.dt)*double(obj.info.params.navg);
-			catch
-				dt2 = 0; % ERROR
-			end
-			if dt1==dt2
-				dt = dt1;
-			elseif dt1>dt2
-				dt = dt2; % Sometimes one is written to fill_values
-			elseif dt2>dt1
-				dt = dt1; % Sometimes one is written to fill_values
-			end
-			if dt == 0
-				disp('    ERROR(computeDcDt): Cant find number of timesteps used in averaging')
-				kill
-			end
+            dt1 = [];
+            dt2 = [];
+            try
+                dt1 = double(obj.info.params.dt)*double(obj.info.params.nwrt);
+            catch
+                dt1 = 0; % ERROR
+            end
+            try
+                dt2 = double(obj.info.params.dt)*double(obj.info.params.navg);
+            catch
+                dt2 = 0; % ERROR
+            end
+            if dt1==dt2
+                dt = dt1;
+            elseif dt1>dt2
+                dt = dt2; % Sometimes one is written to fill_values
+            elseif dt2>dt1
+                dt = dt1; % Sometimes one is written to fill_values
+            end
+            if dt == 0
+                disp('    ERROR(computeDcDt): Cant find number of timesteps used in averaging')
+                kill
+            end
 
             % Load data on either side of 'history' (first,last snapshot)
             for v = 1:length(vars)
@@ -2474,15 +2474,15 @@ classdef romsObj
             % ------------------
 
             % defaults for optional  arguments
-			romsOpt;
+            romsOpt;
             A.time      = [];
             A.prc       = [2];
             A.lonbounds = [floor(min(obj.grid.lon_rho(:))) ceil(max(obj.grid.lon_rho(:)))];
             A.latbounds = [floor(min(obj.grid.lat_rho(:))) ceil(max(obj.grid.lat_rho(:)))];
             A.fontsize  = fontsize;
-			A.coast     = coast;
-			A.ticks     = ticks;
-			A.polygon   = polygon;
+            A.coast     = coast;
+            A.ticks     = ticks;
+            A.polygon   = polygon;
             A           = romsObj.parse_pv_pairs(A,varargin); % parse method arguments to A
             
             % Check for integrated budget
@@ -2529,7 +2529,7 @@ classdef romsObj
                         'ticks',A.ticks,...
                         'fontsize',A.fontsize,...
                         'coast',A.coast,...
-						'polygon',A.polygon);
+                        'polygon',A.polygon);
                     caxis([lims(1) lims(end)]);
                     hold on
                     title([obj.budget.(vars{i}).info.tits{1},': ',tits{j}],'Interpreter', 'Latex','FontSize',A.fontsize+2);
@@ -2539,7 +2539,7 @@ classdef romsObj
                         cmd = ['rm ',obj.paths.plots.budget,fname,'.',figsFormat];
                         system(cmd);
                     end
-					romsOpt;
+                    romsOpt;
                     export_fig(figsFormat,[obj.paths.plots.figs,fname],figsQuality);
                     close(fig); 
                 end
@@ -2590,7 +2590,7 @@ classdef romsObj
                 end
 
                 % Plot total terms
-				romsOpt;
+                romsOpt;
                 fig = romsObj.piofigs(figtype,1);
                 for j = 1:length(terms)
                     y(j)   = [tmp.(terms{j}).mean];
@@ -2613,7 +2613,7 @@ classdef romsObj
                 set(gca,'XTickLabel',tits);
                 set(gca,'TickLabelInterpreter','Latex');
                 title([obj.budget.(vars{i}).info.tits{1},' budget'],'Interpreter', 'Latex');
-				ylabel(obj.budget.(vars{i}).info.units{3},'Interpreter','Latex');
+                ylabel(obj.budget.(vars{i}).info.units{3},'Interpreter','Latex');
                 fname = [vars{i},'_budget'];
                 if exist([obj.paths.plots.figs,fname,'.',figsFormat]) == 2
                     cmd = ['rm ',obj.paths.plots.figs,fname,'.',figsFormat];
@@ -2659,7 +2659,7 @@ classdef romsObj
             A.figtype    = figtype; 
             A.coastcolor = coastcolor;
             A.background = background;
-			A.polygon    = polygon;
+            A.polygon    = polygon;
             A.figdim     = round((obj.grid.ny/obj.grid.nx)*10)/10;
             A            = romsObj.parse_pv_pairs(A,varargin);
 
@@ -2674,7 +2674,7 @@ classdef romsObj
             end
 
             % Get a blank map 
-			warning off % briefly, for contourf warning
+            warning off % briefly, for contourf warning
             dat = zeros(size(tmp.lon_rho));
             [fig,cb] = mapPlot(obj,dat,...
                 'ticks',A.ticks,...
@@ -2683,11 +2683,11 @@ classdef romsObj
                 'figdim',A.figdim,...
                 'background',A.background,...
                 'coastcolor',A.coastcolor,...
-				'polygon',A.polygon);
-			warning on
+                'polygon',A.polygon);
+            warning on
             delete(cb);
 
-			% Add xi/eta grid lines
+            % Add xi/eta grid lines
             set(0,'CurrentFigure',fig);
             [a,b]  = size(tmp.lon_rho);
             for i = 1:(A.dx*2):a
@@ -2705,7 +2705,7 @@ classdef romsObj
                 end
             end
 
-			% Add labels to indices
+            % Add labels to indices
             for i = 1:(A.dx*2):a
                 m_text(tmp.lon_rho(i,end),tmp.lat_rho(i,end),num2str(i),...
                     'fontsize',A.fontsize);
@@ -2725,7 +2725,7 @@ classdef romsObj
                 end
             end
 
-			% Save figure
+            % Save figure
             hold on
             fname = [obj.info.simName,'_grid'];
             if A.save == 1
@@ -2889,10 +2889,10 @@ classdef romsObj
             % - prc           = percentage to limit colorbar axes (if no levels supplied)
             % - bal           = force a balanced colorbar around 0 (1 == yes, 0 == no)
             % - log           = log-scale (1), use with caxis to set limits
-			% - XaxisLocation = Override x-axis ticklabels location (default = bottom) 
-			% - YaxisLocation = Override y-axis ticklabels location (default = left) 
-			% - coast         = m_map map quality (coast, crude, low, high, intermediate)
-			% - polygon       = (0) to turn off boundary polygon (default set in romsOpt)
+            % - XaxisLocation = Override x-axis ticklabels location (default = bottom) 
+            % - YaxisLocation = Override y-axis ticklabels location (default = left) 
+            % - coast         = m_map map quality (coast, crude, low, high, intermediate)
+            % - polygon       = (0) to turn off boundary polygon (default set in romsOpt)
             % -----------------------
             
             % User-inputs
@@ -2907,7 +2907,7 @@ classdef romsObj
             A.coastcolor    = coastcolor;
             A.fontsize      = fontsize;
             A.figtype       = figtype;
-			A.polygon       = polygon;
+            A.polygon       = polygon;
             A.coast         = coast;
             A.figdim        = round((obj.grid.ny/obj.grid.nx)*10)/10;;
             A.prc           = 2;
@@ -2951,20 +2951,20 @@ classdef romsObj
             end
 
             % Set up ticks
-			if isempty(A.lonticks)
-				dx = round(diff(lonbounds)/60)*10;
-				lonticks = (lonbounds(1):dx:lonbounds(2));	
-				lonticks = round(lonticks);
-			else
-				lonticks = A.lonticks;
-			end
-			if isempty(A.latticks)
-				dy = round(diff(latbounds)/60)*10;
-				latticks = (latbounds(1):dy:latbounds(2));
-				latticks = round(latticks);
-			else
-				latticks = A.latticks;
-			end
+            if isempty(A.lonticks)
+                dx = round(diff(lonbounds)/60)*10;
+                lonticks = (lonbounds(1):dx:lonbounds(2));    
+                lonticks = round(lonticks);
+            else
+                lonticks = A.lonticks;
+            end
+            if isempty(A.latticks)
+                dy = round(diff(latbounds)/60)*10;
+                latticks = (latbounds(1):dy:latbounds(2));
+                latticks = round(latticks);
+            else
+                latticks = A.latticks;
+            end
 
             % Initiate figure
             fig = romsObj.piofigs(A.figtype,A.figdim);
@@ -2992,8 +2992,8 @@ classdef romsObj
             end
 
             % Get colormap
-			if ischar(A.cmap)
-				A.cmap = cmocean(A.cmap,length(clevs)-1);
+            if ischar(A.cmap)
+                A.cmap = cmocean(A.cmap,length(clevs)-1);
             elseif isempty(A.cmap)
                 if min(clims(:))<0 & max(clims(:)) > 0 | A.bal == 1
                     A.cmap = cmocean('balance',length(clevs)-1);
@@ -3050,12 +3050,12 @@ classdef romsObj
                 title(A.meta.name,'Interpreter','Latex','fontsize',A.fontsize);
                 ylabel(cb,A.meta.units,'Interpreter','Latex','fontsize',A.fontsize);
             end
-		
-			% Show boundary polygon
-			if A.polygon
-				hold on
-				m_plot(obj.grid.polygon(:,1),obj.grid.polygon(:,2),'-k','linewidth',1);
-			end
+        
+            % Show boundary polygon
+            if A.polygon
+                hold on
+                m_plot(obj.grid.polygon(:,1),obj.grid.polygon(:,2),'-k','linewidth',1);
+            end
             
             % Print figure
             if nargout<1
@@ -3091,12 +3091,12 @@ classdef romsObj
             % - levels:     hard-coded levels to plot (overrides A.prc, A.bal)
             % - difflevels: hard-coded difference levels to plot
             % - cmap:       colormap(default = thermal for no balance, balance for balanced colormap)
-			% - dmap:       colormap for difference plot (default = balance)
+            % - dmap:       colormap for difference plot (default = balance)
             % - units:      string containing units for colorbar
             % ----------------------
 
             % User-inputs
-			romsOpt;
+            romsOpt;
             A.lonbounds  = [];
             A.latbounds  = [];
             A.ticks      = ticks;
@@ -3110,7 +3110,7 @@ classdef romsObj
             A.levels     = [];
             A.difflevels = [];
             A.cmap       = [];
-			A.dmap       = [];
+            A.dmap       = [];
             A.units      = [];
             A = romsObj.parse_pv_pairs(A,varargin);
             
@@ -3127,22 +3127,22 @@ classdef romsObj
                 A.difflevels = linspace(A.difflevels(1),A.difflevels(2),20);
             end
 
-			% If string used for A.cmap or A.dmap, call cmocean
-			% If empty, use defaults
-			if ischar(A.cmap)
-				A.cmap = cmocean(A.cmap,length(A.levels)-1);
-			elseif isempty(A.cmap)
-				if min(all_dat) < 0 & max(all_dat) > 0 | A.bal == 1
-					A.cmap = cmocean('balance',length(A.levels)-1);
-				else
-					A.cmap = cmocean('thermal',length(A.levels)-1);
-				end
-			end
-			if ischar(A.dmap)
-				A.dmap = cmocean(A.dmap,length(A.difflevels)-1);
-			elseif isempty(A.dmap)
-				A.dmap = cmocean('balance',length(A.difflevels)-1);
-			end
+            % If string used for A.cmap or A.dmap, call cmocean
+            % If empty, use defaults
+            if ischar(A.cmap)
+                A.cmap = cmocean(A.cmap,length(A.levels)-1);
+            elseif isempty(A.cmap)
+                if min(all_dat) < 0 & max(all_dat) > 0 | A.bal == 1
+                    A.cmap = cmocean('balance',length(A.levels)-1);
+                else
+                    A.cmap = cmocean('thermal',length(A.levels)-1);
+                end
+            end
+            if ischar(A.dmap)
+                A.dmap = cmocean(A.dmap,length(A.difflevels)-1);
+            elseif isempty(A.dmap)
+                A.dmap = cmocean('balance',length(A.difflevels)-1);
+            end
 
             % Make figs(1) and figs(2)
             [figs(1),cbs(1)] = mapPlot(obj,dat1,...
@@ -3381,7 +3381,7 @@ classdef romsObj
             A.fontsize   = fontsize;
             A.figtype    = figtype;
             A.figdim     = round((obj.grid.ny/obj.grid.nx)*10)/10;;
-			A.coast      = coast;
+            A.coast      = coast;
             A.poly       = 1;
             A = romsObj.parse_pv_pairs(A,varargin);
 
@@ -3405,20 +3405,20 @@ classdef romsObj
             end
 
             % Set up ticks
-			if isempty(A.lonticks)
-				dx = round(diff(lonbounds)/60)*10;
-				lonticks = (lonbounds(1):dx:lonbounds(2));	
-				lonticks = round(lonticks);
-			else
-				lonticks = A.lonticks;
-			end
-			if isempty(A.latticks)
-				dy = round(diff(latbounds)/60)*10;
-				latticks = (latbounds(1):dy:latbounds(2));
-				latticks = round(latticks);
-			else
-				latticks = A.latticks;
-			end
+            if isempty(A.lonticks)
+                dx = round(diff(lonbounds)/60)*10;
+                lonticks = (lonbounds(1):dx:lonbounds(2));    
+                lonticks = round(lonticks);
+            else
+                lonticks = A.lonticks;
+            end
+            if isempty(A.latticks)
+                dy = round(diff(latbounds)/60)*10;
+                latticks = (latbounds(1):dy:latbounds(2));
+                latticks = round(latticks);
+            else
+                latticks = A.latticks;
+            end
 
             % Make map
             fig = romsObj.piofigs(A.figtype,A.figdim);
@@ -3483,7 +3483,7 @@ classdef romsObj
             % ------------------
             
             % User-inputs
-			romsOpt;
+            romsOpt;
             A.xlims      = [];
             A.zlims      = [];
             A.cmap       = [];
@@ -3612,7 +3612,7 @@ classdef romsObj
             % - obj = sliceDiag(obj,{'temp','salt'},'lon',0);
             % 
             % -------------------
-			disp('sliceDiag: Get transects of validation data');
+            disp('sliceDiag: Get transects of validation data');
 
             % Get optional inputs
             A.zlim = inf;
@@ -3896,7 +3896,7 @@ classdef romsObj
             % Example:
             % - obj = loadDiag(obj,vars,depth);
             % -------------------
-			disp('loadDiag: Loading validation data');
+            disp('loadDiag: Loading validation data');
 
             % Optional arguments
             A.outer = [3]; % interpolant padding (degrees)
@@ -4149,11 +4149,11 @@ classdef romsObj
             % - converts structure fields to single  
             % ------------------
             ffields = fields(x);
-			for ff = 1 : length(ffields)
-					if isa(x.(ffields{ff}),'double')
-						x.(ffields{ff}) = single(x.(ffields{ff}));
-					end
-			end
+            for ff = 1 : length(ffields)
+                    if isa(x.(ffields{ff}),'double')
+                        x.(ffields{ff}) = single(x.(ffields{ff}));
+                    end
+            end
         end % end static method struct2single
 
         %--------------------------------------------------------------------------------
@@ -4628,11 +4628,11 @@ classdef romsObj
             fig.Position(3) = xwidth;
             fig.Position(4) = xwidth*ymult;
             fig.Color       = [1 1 1];
-			if strcmp(figVisible,'off')
-				disp('    Done (invisible)');
-			elseif strcmp(figVisble','on');
-				disp('    Done');
-			end
+            if strcmp(figVisible,'off')
+                disp('    Done (invisible)');
+            elseif strcmp(figVisble','on');
+                disp('    Done');
+            end
         end % end static method piofigs
 
         %--------------------------------------------------------------------------------
@@ -4681,7 +4681,7 @@ classdef romsObj
             figsPath = [A.figpath,A.figname,num2str(pltnum)];
             fig     = get(gcf);
             disp(['    Saving ',A.figname,num2str(pltnum)]);
-			export_fig(figsFormat,figsPath,figsQuality);
+            export_fig(figsFormat,figsPath,figsQuality);
         end % end static method pltjpg
     end % end static methods declarations
 end % end classdef

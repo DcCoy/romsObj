@@ -20,12 +20,12 @@ mkdir ${simName}/${runName}/
 DIR="${simName}/${runName}"
 
 # Remove old figures
-rm ${DIR}/*png
-sleep 5
+#rm ${DIR}/*png
+#sleep 5
 
 # Download new figures from remote server
 # NOTE: UPDATE THIS COMMAND FOR YOUR OWN SERVER 
-scp demccoy@poseidon:${diagPath}*png ${DIR}/.
+#scp demccoy@poseidon:${diagPath}*png ${DIR}/.
 
 ######################################################################
 # Start the LaTeX file and save number of variables and variable names
@@ -238,6 +238,22 @@ echo " " >> "$OUTPUT_FILE"
 
 # Get numgriddedVars
 echo "\\\\newcommand*{\\\\numgriddedVars}{${count}}" >> "$OUTPUT_FILE"
+echo " " >> "$OUTPUT_FILE"
+
+###################################################
+# Get number of OMZ diagnostic products 
+###################################################
+# Get numOMZdiags
+numOMZdiags=$(ls OMZ_diag_*_th0.png 2>/dev/null | wc -l)
+echo "\\\\newcommand*{\\\\numOMZdiags}{${numOMZdiags}}" >> "$OUTPUT_FILE"
+echo " " >> "$OUTPUT_FILE"
+
+###################################################
+# Get number of POC flux in diagnostic products 
+###################################################
+# Get numOMZdiags
+numPOCdiags=$(ls pocfluxin_diag*.png 2>/dev/null | wc -l)
+echo "\\\\newcommand*{\\\\numPOCdiags}{${numPOCdiags}}" >> "$OUTPUT_FILE"
 echo " " >> "$OUTPUT_FILE"
 
 #############################################
