@@ -1,0 +1,346 @@
+% TEMPLATE romsDiag LATEX SCRIPT
+% D. McCoy (22-Jul-2024)
+% dmccoy@carnegiescience.edu
+
+% --------------------------------------------------------------------- %
+% Preamble
+% --------------------------------------------------------------------- %
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{outlines}
+\usepackage{float}
+\usepackage{xparse}
+\usepackage{expl3}
+\usepackage{subfig}
+\usepackage{verbatim}
+\usepackage{ifthen}
+\usepackage{amsmath}
+\usepackage[left=2cm,right=2cm,landscape,paperwidth=8.5in,paperheight=13in]{geometry}
+\usepackage{ltxcmds}
+\usepackage{fancyhdr}
+\usepackage{pgffor}
+\usepackage{fmtcount}
+\pagestyle{fancy}
+\extrafloats{100}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\thepage}
+\makeatletter
+\newcommand*{\getdata}[2]{%
+  \expandafter\ltx@CarNumth\expandafter{%
+    \the\numexpr(#1)\expandafter
+  }#2\@nil
+}
+\makeatother
+
+% --------------------------------------------------------------------- %
+% Plot options
+% --------------------------------------------------------------------- %
+\newcommand*{\sfcScale}{0.60}     % adjust if 2D maps need resizing
+\newcommand*{\mapScale}{0.35}  % adjust if maps need resizing
+\newcommand*{\sliceScale}{0.55}  % adjust if transects need resizing
+\newcommand*{\gridScale}{1.00}   % adjust if gridded maps need resizing
+\newcommand*{\transScale}{1.00} % adjust if transect map needs resizing
+
+% --------------------------------------------------------------------- %
+% Set up counters
+% --------------------------------------------------------------------- %
+\newcounter{i}
+\newcounter{j}
+\newcounter{k}
+\newcounter{l}
+
+% --------------------------------------------------------------------- %
+\begin{document}
+% --------------------------------------------------------------------- %
+
+% --------------------------------------------------------------------- %
+% Input external files 
+% --------------------------------------------------------------------- %
+\input{string_replacements}
+\input{variables}
+
+% Define the figure path
+\newcommand*{\figureBasePath}{./\simName/\runName/}
+
+ % Define a command to generate the full figure path
+\newcommand*{\figurePath}[1]{%
+  \figureBasePath#1
+}
+% --------------------------------------------------------------------- %
+% Section notes
+% --------------------------------------------------------------------- %
+\noindent
+\makebox[\textwidth]{\Huge ROMS: \simTitle -- Model Validation}
+\vspace{3em}
+\begin{itemize}
+\Huge
+\item \Huge simName: \simTitle
+\item \Huge runName: \runTitle
+\end{itemize}
+\newpage
+
+% --------------------------------------------------------------------- %
+% Print list of figures
+% --------------------------------------------------------------------- %
+\listoffigures
+\newpage
+
+% --------------------------------------------------------------------- %
+% 2D Fields
+% --------------------------------------------------------------------- %
+\newcommand*{\thisvar}{Null}
+\newcommand*{\thishedr}{Null}
+\newcommand*{\thisdiag}{Null}
+\ifnum \numsfcVars > 0
+
+	% Section page
+	\vspace*{\fill}
+	\noindent
+	\makebox[\textwidth]{\Huge 2D Fields}
+	\vfill
+	\newpage
+
+	% Looper
+	\foreach \i in {1,...,\numsfcVars} {
+		\renewcommand{\thisvar}{\getdata{\i}\sfcVars}
+	        \renewcommand{\thishedr}{\getdata{\i}\sfcHdr}
+	        \renewcommand{\thisdiag}{\getdata{\i}\sfcDiags}
+	        \foreach \j in {1,...,\thisdiag} {
+       	 		\begin{figure}[H]
+          			\centering
+				\subfloat{\includegraphics[scale=\sfcScale,page=1]{\figurePath{\thishedr_\thisvar_2D_roms.png}}}
+				\subfloat{\includegraphics[scale=\sfcScale,page=1]{\figurePath{\thishedr_\thisvar_2D_diag\j.png}}}
+				\subfloat{\includegraphics[scale=\sfcScale,page=1]{\figurePath{\thishedr_\thisvar_2D_diff\j.png}}}
+				\ifnum \i=1
+					\ifnum \j=1
+						\caption[Surface comparisons: \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\else
+					\ifnum \j=1
+						\caption[ ......... \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else	
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\fi
+         		\end{figure}
+			\newpage
+		}
+	}	
+\else    
+\fi 
+
+% --------------------------------------------------------------------- %
+% Shallow Fields
+% --------------------------------------------------------------------- %
+\renewcommand*{\thisvar}{Null}
+\renewcommand*{\thishedr}{Null}
+\renewcommand*{\thisdiag}{Null}
+\ifnum \numshallowVars > 0
+
+	% Section page
+	\vspace*{\fill}
+	\noindent
+	\makebox[\textwidth]{\Huge Shallow Z-Slices}
+	\vfill
+	\newpage
+
+	% Looper
+	\foreach \i in {1,...,\numshallowVars} {
+		\renewcommand{\thisvar}{\getdata{\i}\shallowVars}
+	        \renewcommand{\thishedr}{\getdata{\i}\shallowHdr}
+	        \renewcommand{\thisdiag}{\getdata{\i}\shallowDiags}
+	        \foreach \j in {1,...,\thisdiag} {
+       	 		\begin{figure}[H]
+          			\centering
+				\foreach \k in {1,...,\numshallowZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zshallow_\k_roms.png}}}
+				}
+				
+				\foreach \k in {1,...,\numshallowZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zshallow_\k_diag\j.png}}}
+				}
+				
+				\foreach \k in {1,...,\numshallowZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zshallow_\k_diff\j.png}}}
+				}
+				\ifnum \i=1
+					\ifnum \j=1
+						\caption[Shallow zslice comparisons: \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\else
+					\ifnum \j=1
+						\caption[ ......... \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else	
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\fi
+         		\end{figure}
+			\newpage
+		}
+	}	
+\else    
+\fi     
+
+% --------------------------------------------------------------------- %
+% Deep Fields
+% --------------------------------------------------------------------- %
+\renewcommand*{\thisvar}{Null}
+\renewcommand*{\thishedr}{Null}
+\renewcommand*{\thisdiag}{Null}
+\ifnum \numdeepVars > 0
+
+	% Section page
+	\vspace*{\fill}
+	\noindent
+	\makebox[\textwidth]{\Huge Deep Z-Slices}
+	\vfill
+	\newpage
+
+	% Looper
+	\foreach \i in {1,...,\numdeepVars} {
+		\renewcommand{\thisvar}{\getdata{\i}\deepVars}
+	        \renewcommand{\thishedr}{\getdata{\i}\deepHdr}
+	        \renewcommand{\thisdiag}{\getdata{\i}\deepDiags}
+	        \foreach \j in {1,...,\thisdiag} {
+       	 		\begin{figure}[H]
+          			\centering
+				\foreach \k in {1,...,\numdeepZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zdeep_\k_roms.png}}}
+				}
+				
+				\foreach \k in {1,...,\numdeepZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zdeep_\k_diag\j.png}}}
+				}
+				
+				\foreach \k in {1,...,\numdeepZ}{
+					\subfloat{\includegraphics[scale=\mapScale,page=1]{\figurePath{\thishedr_\thisvar_zdeep_\k_diff\j.png}}}
+				}
+				\ifnum \i=1
+					\ifnum \j=1
+						\caption[Deep zslice comparisons: \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\else
+					\ifnum \j=1
+						\caption[ ......... \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else	
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\fi
+         		\end{figure}
+			\newpage
+		}
+	}	
+\else    
+\fi     
+
+% --------------------------------------------------------------------- %
+% Transects
+% --------------------------------------------------------------------- %
+\renewcommand*{\thisvar}{Null}
+\renewcommand*{\thishedr}{Null}
+\renewcommand*{\thisdiag}{Null}
+\ifnum \numsectVars > 0
+
+	% Section page
+	\vspace*{\fill}
+	\noindent
+	\makebox[\textwidth]{\Huge Transects}
+	\vfill
+	\newpage
+	
+	% Locations
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=\transScale,page=1]{\figurePath{trans_locations.png}}
+		\caption[Transect map]{Transect map}
+	\end{figure}
+	\vfill
+	\newpage
+
+	% Looper
+	\foreach \i in {1,...,\numsectVars} {
+		\renewcommand{\thisvar}{\getdata{\i}\sectVars}
+	        \renewcommand{\thishedr}{\getdata{\i}\sectHdr}
+	        \renewcommand{\thisdiag}{\getdata{\i}\sectDiags}
+	        \foreach \j in {1,...,\thisdiag} {
+       	 		\begin{figure}[H]
+          			\centering
+				\foreach \k in {1,...,\numSects}{
+					\subfloat{\includegraphics[scale=\sliceScale,page=1]{\figurePath{\thishedr_\thisvar_transect_\k_roms.png}}}
+				}
+				
+				\foreach \k in {1,...,\numSects}{
+					\subfloat{\includegraphics[scale=\sliceScale,page=1]{\figurePath{\thishedr_\thisvar_transect_\k_diag\j.png}}}
+				}
+				
+				\foreach \k in {1,...,\numSects}{
+					\subfloat{\includegraphics[scale=\sliceScale,page=1]{\figurePath{\thishedr_\thisvar_transect_\k_diff\j.png}}}
+				}
+				\ifnum \i=1
+					\ifnum \j=1
+						\caption[Transect comparisons: \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\else
+					\ifnum \j=1
+						\caption[ ......... \thisstring{\thisvar}]{\thisstring{\thisvar}}
+					\else	
+						\caption[]{\thisstring{\thisvar}}
+					\fi
+				\fi
+         		\end{figure}
+			\newpage
+		}
+	}	
+\else    
+\fi
+
+% --------------------------------------------------------------------- %
+% Gridded observations
+% --------------------------------------------------------------------- %  
+\renewcommand*{\thisvar}{Null}
+\renewcommand*{\thishedr}{Null}
+\renewcommand*{\thisdiag}{Null}
+\ifnum \numgriddedVars > 0 
+
+	% Section page
+	\vspace*{\fill}
+	\noindent
+	\makebox[\textwidth]{\Huge ROMS vs Gridded Observations}
+	\vfill
+	\newpage
+	
+	% Looper
+	\foreach \i in {1,...,\numgriddedVars} {
+		\renewcommand{\thisvar}{\getdata{\i}\griddedVars}
+	        \renewcommand{\thishedr}{\getdata{\i}\griddedHdr}
+		\foreach \j in {1,...,\numgriddedZ} {
+       	 		\begin{figure}[H]
+          			\centering
+				\subfloat{\includegraphics[scale=\gridScale,page=1]{\figurePath{\thishedr_gridded_roms_\thisvar_\j.png}}}
+				\subfloat{\includegraphics[scale=\gridScale,page=1]{\figurePath{\thishedr_gridded_obs_\thisvar_\j.png}}}
+				\ifnum \j=1
+					\caption[Gridded comparisons: \thisstring{\thisvar}]{\thisstring{\thisvar}}
+				\else
+					\caption[]{\thisstring{\thisvar}}
+				\fi
+			\end{figure}
+			\newpage
+		}
+	}
+\else
+\fi
+\end{document}
+
+
+
+

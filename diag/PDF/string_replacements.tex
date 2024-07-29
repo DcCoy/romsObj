@@ -1,0 +1,43 @@
+\ExplSyntaxOn
+
+% Define the \this_string function
+\cs_new:Npn \this_string:n #1
+{
+  \use:c { #1 }
+}
+
+\NewDocumentCommand{\thisstring}{m}
+{
+  \this_string:n {#1}
+}
+
+\ExplSyntaxOff
+
+% Define your mappings here
+\newcommand{\MLD}{Mixed layer depth}
+\newcommand{\SSH}{Sea-surface height}
+\newcommand{\NPP}{Net primary production}
+\newcommand{\sfcchl}{Surface chlA}
+\newcommand{\pocfluxin}{POC Sinking Flux}
+\newcommand{\fgnitrous}{Air-sea flux of N$_2$O}
+\newcommand{\sustr}{Zonal wind stress}
+\newcommand{\svstr}{Meridional wind stress}
+\newcommand{\ws}{Wind stress}
+\newcommand{\wsc}{Wind stress curl}
+\newcommand{\temp}{Temperature}
+\newcommand{\salt}{Salinity}
+\newcommand{\density}{Density}
+\newcommand{\oxygen}{Oxygen (O$_2$)}
+\newcommand{\nox}{Nitrate+Nitrite (NO$_x$)}
+\newcommand{\phosphate}{Phosphate (PO$^{3-}_4$)}
+\newcommand{\nitrite}{Nitrite (NO$^{-}_2$)}
+\newcommand{\nitrous}{Nitrous oxide (N$_2$O)}
+\newcommand{\ammonium}{Ammonium (NH$^{+}_4$)}
+\newcommand{\nstar}{N*}
+\newcommand{\silicate}{Silicate (SiO$_3$)}
+\newcommand{\DIC}{Dissolved inorganic carbon}
+\newcommand{\Alk}{Alkalinity}
+\newcommand{\Fe}{Iron}
+
+
+

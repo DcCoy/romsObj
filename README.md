@@ -5,6 +5,7 @@ romsObj is Matlab class developed at UCLA to load and process ROMS data and make
 
 - [Updates](#updates)
 - [Getting started](#getting-started)
+- [Using romsObj](#using-romsObj)
 - [Code structure](#code-structure)
 - [Support](#support)
 - [How to cite](#how-to-cite)
