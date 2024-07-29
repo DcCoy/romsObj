@@ -573,7 +573,9 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     set(fig, 'Color', tcol, 'Position', pos);
                     tcol = 255;
                 else
+					warning off
                     [A, tcol] = print2array(fig, magnify, renderer);
+					warning on
                 end
                 % Crop the background
                 if options.crop
