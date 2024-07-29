@@ -1965,7 +1965,7 @@ classdef romsObj
                 obj   = intVar(obj,terms);
 
                 % Load and process 2D fluxes
-                obj = getFluxes(obj,vars(i),...
+                obj = computeFluxes(obj,vars(i),...
                     obj.budget.(vars{i}).info.fluxes,...
                     obj.budget.(vars{i}).info.lvls,...
                     obj.budget.(vars{i}).info.feq);
@@ -1998,14 +1998,14 @@ classdef romsObj
         end % end method getBudg
 
         %--------------------------------------------------------------------------------
-        function obj = getFluxes(obj,vars,fluxes,lvls,feq,varargin);
+        function obj = computeFluxes(obj,vars,fluxes,lvls,feq,varargin);
             % -------------------
             % Grab 2D fluxes for budget, convert to 3D 
             % Called in getBudg
             % Fluxes in mmol/m2/s
             %
             % Usage:
-            % - obj = getFluxes(obj,vars,fluxes,lvls,feq)
+            % - obj = computeFluxes(obj,vars,fluxes,lvls,feq)
             %
             % Inputs:
             % - vars    = BGC budget that you are closing (i.e. 'NO2')
@@ -2017,9 +2017,9 @@ classdef romsObj
             % - type    = file type (avg, his, rst)
             %
             % Example:
-            % - obj = getFluxes(obj,'N2O',{'FG_N2O'},{'sfc'},[1])
+            % - obj = computeFluxes(obj,'N2O',{'FG_N2O'},{'sfc'},[1])
             % -------------------
-            disp('getFluxes: Get 2D interface fluxes, convert to 3D')
+            disp('computeFluxes: Get 2D interface fluxes, convert to 3D')
 
             % Process optional inputs
             A.type = 'avg'; % file type
@@ -2061,7 +2061,7 @@ classdef romsObj
                     obj.budget.(vars{1}).sed(:,end,:,:) = nan;
                 end
             end
-        end % end method getFluxes
+        end % end method computeFluxes
 
         %--------------------------------------------------------------------------------
         function obj = computeDcDt(obj,vars,file)
