@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Simulation and run information
-simName="peru_chile_0p1"    
-runName="microbes_eth_obligate_tune0" # runName
+simName="pacmed_0p25"    
+runName="pacmed_0p25_anhpham_Ligands" # runName
 
 # Alternative titles (for LaTeX document)
-simTitle="Peru Chile 10km"
-runTitle="Tune0" 
+simTitle="Pac-wide 25km"
+runTitle="Ligands" 
 
 # Get diagPath for plots on remote server
 # NOTE: UPDATE THIS PATH FOR YOUR OWN SERVER
@@ -25,7 +25,7 @@ DIR="${simName}/${runName}"
 
 # Download new figures from remote server
 # NOTE: UPDATE THIS COMMAND FOR YOUR OWN SERVER 
-#scp demccoy@poseidon:${diagPath}*png ${DIR}/.
+scp demccoy@poseidon:${diagPath}*png ${DIR}/.
 
 ######################################################################
 # Start the LaTeX file and save number of variables and variable names

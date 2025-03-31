@@ -10,15 +10,15 @@
 run('../romsOpt.m');
 
 % Run options
-if (0)
+if (1)
     % Pacmed
     simName    = 'pacmed_0p25';
-    runName    = 'pdamien_loop3';
+    runName    = 'pacmed_0p25_anhpham_Ligands';
     file       = 1; 
 else
     % Peru
     simName    = 'peru_chile_0p1';
-    runName    = 'microbes_eth_obligate_tune0';
+    runName    = 'microbes_eth_facultative_baseline';
     file       = 109:120;
 end
 
